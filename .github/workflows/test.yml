@@ -37,14 +37,13 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
       - name: Create new repository via GitHub API
         run: |
-          curl -X POST \
+          curl -X POST https://api.github.com/user/repos \
             -H "Accept: application/vnd.github+json" \ 
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -d '{
-                "name": "${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}",
-                "private": true
-              }' \
-            https://api.github.com/user/repos
+              "name": "${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}",
+              "private": true
+              }'
       - name: Push repository on mirror mode
         working-directory: ./${{ env.REPOSITORY_NAME }}
         run: |
