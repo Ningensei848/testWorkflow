@@ -39,7 +39,7 @@ jobs:
         run: |
           curl -X POST https://api.github.com/user/repos \
             -H "Accept: application/vnd.github+json" \ 
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
             -d '{
               "name": "${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}",
               "private": true
