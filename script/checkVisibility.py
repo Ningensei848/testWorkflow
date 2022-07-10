@@ -20,5 +20,4 @@ req.headers = {"Accept": "application/vnd.github+json", "Authorization": f"token
 
 res = urllib.request.urlopen(req)
 content = json.loads(res.read().decode("utf-8"))
-private = content["private"]
-print(f"IS_PRIVATE={private}")
+print(str(content["private"]).lower())
