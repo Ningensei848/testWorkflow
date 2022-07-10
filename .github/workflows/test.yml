@@ -16,6 +16,7 @@ jobs:
         id: api-request
         run: |
           is_private=$(python script/checkVisibility.py)
+          echo $is_private
           echo "::set-output name=result::$is_private"
         env:
           OWNER_AND_REPO: ${{ github.repository }}
