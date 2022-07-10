@@ -40,9 +40,9 @@ jobs:
           curl -X POST \
             -H "Accept: application/vnd.github+json" \ 
             -H "Authorization: token ${{ github.token }}" \
-            -d '{ \
-                "name": "${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}", \
-                "private": true \
+            -d '{
+                "name": "${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}",
+                "private": true
               }' \
             https://api.github.com/user/repos
       - name: Push repository on mirror mode
