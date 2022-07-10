@@ -1,0 +1,54 @@
+name: Create private repository for personal SATwi
+
+on:
+  # Manual execution only
+  workflow_dispatch:
+
+jobs:
+  check-visibility:
+    runs-on: ubuntu-22.04
+    outputs:
+      IS_PRIVATE: ${{ steps.api-request.outputs.result }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Check visibility of this repo via GitHub API
+        id: api-request
+        run: |
+          is_private=$(python script/checkVisibility.py)
+          echo "::set-output name=result::$is_private"
+        env:
+          OWNER_AND_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-repository:
+    runs-on: ubuntu-22.04
+    needs: check-visibility
+    # CAUTION! values are strictly comparable. cf. https://note.sarisia.cc/entry/boolean-in-github-actions
+    # If true, it is verified that this repository is private so this workflow runs and collects tweets
+    if: needs.check-visibility.outputs.IS_PRIVATE == 'false'
+    steps:
+      - name: Clone bare repository and set working directory
+        run: |
+          git clone --bare "https://github.com/$GITHUB_REPOSITORY"
+          echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+      - name: Create new repository via GitHub API
+        run: |
+          curl -i -X POST \
+            -H "Accept: application/vnd.github+json" \ 
+            -H "Authorization: token ${{ github.token }}" \
+            -d '{ \
+                "name": "${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}", \
+                "private": true \
+              }' \
+            https://api.github.com/user/repos
+          sleep 10
+      - name: Push repository on mirror mode
+        working-directory: ./${{ env.REPOSITORY_NAME }}
+        run: git push --mirror "https://$OWNER_NAME:$GITHUB_TOKEN@github.com/$ALT_NAME"
+        env:
+          OWNER_NAME: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALT_NAME: ${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}
