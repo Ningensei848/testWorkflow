@@ -50,7 +50,7 @@ jobs:
           ls -la
           cd ${{ env.REPOSITORY_NAME }}.git
           sleep 10
-          git push --mirror "https://$OWNER_NAME:$GITHUB_TOKEN@github.com/$ALT_NAME"
+          git push --mirror "https://$OWNER_NAME:$GITHUB_TOKEN@github.com/$OWNER_NAME/$ALT_NAME"
         env:
           OWNER_NAME: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
