@@ -45,8 +45,10 @@ jobs:
 
         
       - name: Push repository on mirror mode
-        working-directory: ./${{ env.REPOSITORY_NAME }}
         run: |
+          pwd
+          ls -la
+          cd ${{ env.REPOSITORY_NAME }}
           sleep 10
           git push --mirror "https://$OWNER_NAME:$GITHUB_TOKEN@github.com/$ALT_NAME"
         env:
