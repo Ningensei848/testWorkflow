@@ -3,6 +3,9 @@ name: Create private repository for personal SATwi
 on:
   # Manual execution only
   workflow_dispatch:
+  
+env:
+  PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
 jobs:
   check-visibility:
@@ -35,17 +38,17 @@ jobs:
           echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}" >> $GITHUB_ENV
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
+
       - name: Create new repository via GitHub API
         run: |
           curl -X POST https://api.github.com/user/repos \
             -H "Accept: application/vnd.github+json" \ 
-            -H "Authorization: token $TOKEN" \
+            -H "Authorization: token $PERSONAL_ACCESS_TOKEN" \
             -d '{
               "name": "${{ env.REPOSITORY_NAME }}-${{ github.repository_owner }}",
               "private": true
               }'
-        env:
-          TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        
       - name: Push repository on mirror mode
         working-directory: ./${{ env.REPOSITORY_NAME }}
         run: |
